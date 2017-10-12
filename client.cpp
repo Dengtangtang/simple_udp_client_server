@@ -68,7 +68,7 @@ int main() {
 		strcpy(buf, TRAN_MSG);
 		strcat(buf, tmp);
 
-		printf("%s\n", buf);
+		// printf("%s\n", buf);
 
 		buf_len = strlen(buf);
 
