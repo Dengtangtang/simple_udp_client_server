@@ -14,12 +14,11 @@
 using namespace std;
 
 int main() {
-	int sk, num;
+	int sk;
 	struct sockaddr_in server;
 	struct hostent *hp;
-	char buf[MAXBUF];
-	int buf_len;
-	char tmp[16];
+	char bufout[MAXBUF], bufin[MAXBUF];
+	int bufout_len;
 
 	/* create a socket 
 	   udp uses SOCK_DGRAM as type
@@ -56,37 +55,32 @@ int main() {
 
 	/* based on given requirment, client sends msg with number from 0 to 50 to the echo server */
 
-	for (num = 1; num <= 2; ++num) {
+	for (int i = 1; i <= 50; ++i) {
 
 		/* clear */
 
-		memset(tmp , 0, strlen(tmp));
-		memset(buf , 0, strlen(bufin));
+		memset(bufout , 0, strlen(bufout));
 
-		/* append number to message */
-		sprintf(tmp, "%d", num);
-		strcpy(buf, TRAN_MSG);
-		strcat(buf, tmp);
+		/* copy message to buffer */
+		strcpy(bufout, TRAN_MSG);
 
-		// printf("%s\n", buf);
-
-		buf_len = strlen(buf);
+		bufout_len = strlen(bufout);
 
 		/* send data to echo server */
 
-		int n_sent = sendto(sk, buf, buf_len, 0, (struct sockaddr*) &server, sizeof(server));
+		int n_sent = sendto(sk, bufout, bufout_len, 0, (struct sockaddr*) &server, sizeof(server));
 
 		if (n_sent < 0) {
 			perror("errors on sending data!");
 			exit(1);
 		}
 
-		if (n_sent != buf_len)
-			printf("Sendto sent %d bytes out of %d\n", n_sent, buf_len);
+		if (n_sent != bufout_len)
+			printf("Sendto sent %d bytes out of %d\n", n_sent, bufout_len);
 
 		/* wait for a reply (from anyone) */
 
-		int n_recv = recvfrom(sk, buf, MAXBUF, 0, NULL, NULL);
+		int n_recv = recvfrom(sk, bufin, MAXBUF, 0, NULL, NULL);
 		if (n_recv < 0) {
 			perror("errors on receiving data!");
 			exit(1);
@@ -94,12 +88,12 @@ int main() {
 
 		/* send what we got back to stdout */
 
-		// buf[n_recv]='\0';
-		// if (write(STDOUT_FILENO, buf, n_recv + 1) < 0) {
-		// 	perror("Problem writing to stdout");
-		// 	exit(1);
-		// }
-		// printf("\n");
+		bufin[n_recv]='\0';
+		if (write(STDOUT_FILENO, bufin, n_recv + 1) < 0) {
+			perror("Problem writing to stdout");
+			exit(1);
+		}
+		printf("\n");
 
 	}
 
