@@ -61,8 +61,6 @@ void echo(int sd) {
 	}
 }
 
-
-
 int main() {
 
 	int ld;
